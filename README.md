@@ -1,4 +1,15 @@
 # F21DL
 
-# Data Processing Procedures
-- Merged features.csv, genres.csv, tracks.csv using track_id and genre_id
+# Plan
+
+## Data Processing Procedures
+- [ ] Merge tracks.csv, features.csv, genres.csv
+- [ ] Create the spectrograms from the audio files
+- [ ] Check for mismatch in files
+- [ ] Check for corrupted files
+
+## Baseline Models
+- [ ] Pick three models
+
+## Neural Networks
+- [ ] Design the neural network
