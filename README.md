@@ -3,7 +3,7 @@
 # Plan
 
 ## Data Processing Procedures
-- [ ] Merge tracks.csv, features.csv, genres.csv
+- [x] Merge tracks.csv, features.csv, genres.csv
 - [ ] Create the spectrograms from the audio files
 - [ ] Check for mismatch in files
 - [x] Check for corrupted files
@@ -32,3 +32,7 @@ Thes audio files were found to be not long enough and were manually removed from
 
 > [!WARNING]
 > Ask Proffessor whether to create a script that can do this automatically
+
+## Actual Task Order
+- Check for corrupted files
+- Merged tracks, features with the audio files (skipped out genre for now)
