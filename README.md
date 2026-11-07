@@ -6,7 +6,7 @@
 - [ ] Merge tracks.csv, features.csv, genres.csv
 - [ ] Create the spectrograms from the audio files
 - [ ] Check for mismatch in files
-- [ ] Check for corrupted files
+- [x] Check for corrupted files
 
 ## Baseline Models
 - [ ] Pick three models
