@@ -10,6 +10,7 @@
 
 ## Baseline Models
 - [ ] Pick three models
+- [x] Random Forest ([scripts/models/random_forest.py](scripts/models/random_forest.py))
 
 ## Neural Networks
 - [ ] Design the neural network
