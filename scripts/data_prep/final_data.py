@@ -1,5 +1,6 @@
 from valid_audio import check_song_length, remove_bad_songs
 from merge import get_track_id, merge_frames
+from spectogram import create_spectrograms
 import pandas as pd
 import os
 
@@ -34,3 +35,7 @@ if __name__ == '__main__':
     path_processed = os.path.join(script_dir, "../..", "data", "processed")
     os.makedirs(path_processed, exist_ok=True)
     audio_features_tracks_df.to_csv(os.path.join(path_processed, "fma_small_merged.csv"), index=False)
+
+
+    spectogram_path = os.path.join(script_dir, "../..", "data", "processed", "spectrograms")
+    create_spectrograms(PATH_FMA_AUDIO, spectogram_path)
