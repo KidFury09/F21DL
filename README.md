@@ -4,8 +4,8 @@
 
 ## Data Processing Procedures
 - [x] Merge tracks.csv, features.csv, genres.csv
-- [ ] Create the spectrograms from the audio files
-- [ ] Check for mismatch in files
+- [x] Create the spectrograms from the audio files
+- [x] Check for mismatch in files
 - [x] Check for corrupted files
 
 ## Baseline Models
@@ -36,6 +36,38 @@ Thes audio files were found to be not long enough and were manually removed from
 ## Actual Task Order
 - Check for corrupted files
 - Merged tracks, features with the audio files (skipped out genre for now)
+
+---
+---
+# Environment Setup
+
+Requires **Python 3.12 or newer**. Check your version with `python --version` (or `python3 --version`).
+
+## Step 1: Create a virtual environment
+From the repo root, run:
+
+```bash
+python -m venv .venv
+```
+
+Then activate it:
+
+```bash
+# Linux / macOS
+source .venv/bin/activate
+
+# Windows (PowerShell)
+.venv\Scripts\Activate.ps1
+
+# Windows (cmd)
+.venv\Scripts\activate.bat
+```
+
+## Step 2: Install the dependencies
+
+```bash
+pip install -r requirements.txt
+```
 
 # Data Set Preparation Steps
 
