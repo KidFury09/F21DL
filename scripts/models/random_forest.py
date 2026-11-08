@@ -29,11 +29,15 @@ PARAM_GRID = [
 ]
 
 
+# AI Generated Function
+# Prompt: Predict on X using the given model and return accuracy, macro-F1 score, and predictions
 def evaluate(model, X, y):
     pred = model.predict(X)
     return accuracy_score(y, pred), f1_score(y, pred, average="macro"), pred
 
 
+# AI Generated Code
+# Prompt: Tune a RandomForestClassifier on the validation set using PARAM_GRID, refit with best macro-F1 params, and print test accuracy, macro-F1, classification report, confusion matrix, and top 10 feature importances
 if __name__ == "__main__":
     # Tree models don't need scaling
     X_train, X_val, X_test, y_train, y_val, y_test = load_split(scale=False)

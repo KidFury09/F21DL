@@ -102,12 +102,16 @@ def _check_dropped_columns(df):
         raise ValueError(f"Metadata columns with no documented drop reason: {sorted(undocumented)}")
 
 
+# AI Generated Function
+# Prompt: Return the sorted unique genre names from track_genre_top so label index i maps to genre name
 def get_label_names(csv_path=PATH_MERGED_CSV):
     """Genre names in label-encoded order, i.e. get_label_names()[i] is class i."""
     genres = pd.read_csv(csv_path, usecols=[TARGET_COL])[TARGET_COL].dropna()
     return list(np.sort(genres.unique()))
 
 
+# AI Generated Function
+# Prompt: Load fma_small_merged.csv, drop metadata columns, split into train/val/test using set_split, fill missing values with train medians, encode track_genre_top, and scale features using StandardScaler fitted on train only
 def load_split(csv_path=PATH_MERGED_CSV, scale=True, return_ids=False):
     """
     Load the merged FMA small dataset and return the fixed train/val/test split.
