@@ -164,6 +164,29 @@ python scripts/data_prep/final_data.py
 
 The final dataset will be stored in `data/processed/`.
 
+# EDA-1: Exploratory Data Analysis Plots
+
+Script: [scripts/data_prep/eda.py](scripts/data_prep/eda.py)
+
+## How to run
+From the `F21DL-main` folder:
+```powershell
+python scripts/data_prep/eda.py
+```
+This uses the training split from `load_split()` (6,394 tracks, ~800 per genre) and saves 4 plots into `figures/`:
+- `figures/eda_feature_boxplots.png` — boxplots for 6 audio features across the 8 genres
+- `figures/eda_genre_feature_heatmap.png` — average z-score per genre for each of the 11 feature groups in `features.csv`
+- `figures/eda_pca_scatter.png` — 2D PCA plot of all 518 scaled features
+- `figures/eda_spectrograms_per_genre.png` — 1 example log-mel spectrogram per genre (from DATA-3)
+
+## What the plots show
+- **Instrumental and Folk are the easiest to tell apart from the loud genres:** In the boxplots, Instrumental and Folk have the lowest spectral centroid (`659 Hz` and `850 Hz`), lowest RMS energy (`2.75` and `3.48`), and lowest zero-crossing rate (`0.029` and `0.033`), but the highest spectral contrast (`~20.1`). Electronic, Hip-Hop, and Rock sit at the opposite end with much higher brightness (`1265–1428 Hz`), loudness (`5.25–5.56`), and zero-crossing rate (`0.050–0.058`).
+- **Some genres look very similar on average:** In the heatmap, Electronic and Hip-Hop have almost the same red profile (`+0.38` to `+0.62` on spectral centroid, bandwidth, rolloff, `rmse`, and `chroma_stft`). Instrumental and Folk also pair up on the negative side (`-0.35` to `-0.88`). Models relying only on overall averages will likely mix these pairs up.
+- **Pop and Experimental don't have a clear profile:** Pop sits close to `0` across every feature group in the heatmap (`-0.11` to `+0.12`), so it looks like the average of the whole dataset. Experimental has the widest boxes on almost every feature because it is a broad catch-all genre.
+- **2D PCA has heavy overlap:** `PC1` (`11.6%`) and `PC2` (`7.3%`) only cover `18.9%` of the variance, and all 8 genres overlap in one big cloud. The genre medians (`X` markers) still pull apart in the expected directions (Folk/Instrumental on the right, Electronic/Hip-Hop top-left, Rock on the left, Pop/International/Experimental in the middle), which suggests non-linear models like Random Forest or MLP should do better than simple linear ones.
+- **Spectrograms show timing and beat patterns that summary stats miss:** In the spectrogram grid, Hip-Hop and Pop have regular vertical lines from steady drum beats, Electronic has heavy repeating bass bands at the bottom (`mel bins 0–35`), Rock builds up into a loud wall of sound around `10s`, and Instrumental/Folk have quiet upper frequencies and clear gaps between notes. This is why we also train a CNN on the spectrograms instead of only using the 518 summary features.
+
+
 
 # DATA-4: Cleaning and Fixed Train/Val/Test Split
 
