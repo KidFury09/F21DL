@@ -161,7 +161,8 @@ def load_split(csv_path=PATH_MERGED_CSV, scale=True, return_ids=False, n_feature
     y = pd.Series(encoder.transform(df[TARGET_COL]), name=TARGET_COL)
     y_train, y_val, y_test = (y[masks[n]] for n in SPLIT_NAMES)
 
-    # Feature selection (EDA-2): rank on TRAIN only using ANOVA F-statistic
+    # AI help 
+    # Prompt: Add top-k ANOVA F-test feature selection fitted on X_train only to load_split
     if n_features is True:
         n_features = DEFAULT_N_FEATURES
     if n_features is not None and n_features < len(feature_cols):
