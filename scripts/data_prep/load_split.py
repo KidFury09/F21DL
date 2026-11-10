@@ -29,6 +29,7 @@ import os
 
 import numpy as np
 import pandas as pd
+from sklearn.feature_selection import f_classif
 from sklearn.preprocessing import LabelEncoder, StandardScaler
 
 
@@ -42,6 +43,11 @@ TARGET_COL = "track_genre_top"
 SPLIT_COL = "set_split"
 ID_COL = "track_id"
 SPLIT_NAMES = ("training", "validation", "test")
+
+# Default number of features chosen by EDA-2 (ANOVA F-test on X_train).
+# Using the top 150 features keeps validation accuracy on par with all 518
+# while dropping ~71% of redundant/noisy columns.
+DEFAULT_N_FEATURES = 150
 
 
 # Metadata columns from tracks.csv that are dropped, grouped by the reason.
@@ -111,8 +117,8 @@ def get_label_names(csv_path=PATH_MERGED_CSV):
 
 
 # AI Generated Function
-# Prompt: Load fma_small_merged.csv, drop metadata columns, split into train/val/test using set_split, fill missing values with train medians, encode track_genre_top, and scale features using StandardScaler fitted on train only
-def load_split(csv_path=PATH_MERGED_CSV, scale=True, return_ids=False):
+# Prompt: Load fma_small_merged.csv, drop metadata columns, split into train/val/test using set_split, fill missing values with train medians, encode track_genre_top, optionally select top-k features using ANOVA F-test fitted on train only, and scale features using StandardScaler fitted on train only
+def load_split(csv_path=PATH_MERGED_CSV, scale=True, return_ids=False, n_features=None):
     """
     Load the merged FMA small dataset and return the fixed train/val/test split.
 
@@ -123,9 +129,13 @@ def load_split(csv_path=PATH_MERGED_CSV, scale=True, return_ids=False):
                     tree models and Naive Bayes.
         return_ids: if True, also return the track_id Series for each split
                     (so the CNN can use the same split on spectrograms).
+        n_features: number of top features to keep (ranked by ANOVA F-statistic
+                    on X_train, y_train only). Pass None or 518 to keep all 518
+                    features, or True / DEFAULT_N_FEATURES (150) for the chosen
+                    EDA-2 feature set.
 
     Returns:
-        X_train, X_val, X_test : pd.DataFrame, 518 feature columns
+        X_train, X_val, X_test : pd.DataFrame, feature columns
         y_train, y_val, y_test : pd.Series of ints 0..7 (see get_label_names())
         [ids_train, ids_val, ids_test] : pd.Series of track_ids, if return_ids
     """
@@ -150,6 +160,15 @@ def load_split(csv_path=PATH_MERGED_CSV, scale=True, return_ids=False):
     encoder = LabelEncoder().fit(df[TARGET_COL])
     y = pd.Series(encoder.transform(df[TARGET_COL]), name=TARGET_COL)
     y_train, y_val, y_test = (y[masks[n]] for n in SPLIT_NAMES)
+
+    # Feature selection (EDA-2): rank on TRAIN only using ANOVA F-statistic
+    if n_features is True:
+        n_features = DEFAULT_N_FEATURES
+    if n_features is not None and n_features < len(feature_cols):
+        f_scores, _ = f_classif(X_train, y_train)
+        top_idx = np.argsort(f_scores)[::-1][: int(n_features)]
+        feature_cols = [feature_cols[i] for i in top_idx]
+        X_train, X_val, X_test = (x[feature_cols] for x in (X_train, X_val, X_test))
 
     # Scaling: fit on train ONLY, then apply to val and test
     if scale:

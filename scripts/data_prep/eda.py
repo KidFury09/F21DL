@@ -7,28 +7,18 @@ Generates and saves 4 figures to `figures/`:
     3. figures/eda_pca_scatter.png            - 2D PCA projection of the 518 audio features coloured by genre
     4. figures/eda_spectrograms_per_genre.png - 2x4 grid of 1 example log-mel spectrogram per genre (from DATA-3)
 
-Key Findings from the Plots:
-    - Feature Boxplots: Electronic (median 1428 Hz) and Hip-Hop (1413 Hz) have the highest spectral
-      centroids, while Instrumental (659 Hz) and Folk (850 Hz) sit much lower. Instrumental (20.16)
-      and Folk (20.07) have the highest spectral contrast, whereas Rock (16.39) and Hip-Hop (16.89)
-      have the lowest and roughly double the zero-crossing rate (0.058 and 0.056 vs. 0.029 and 0.033).
-      Hip-Hop, Electronic, and Rock are the loudest (RMS energy), while Experimental has the widest
-      interquartile spread.
-    - Feature Family Heatmap: Instrumental and Folk are strongly below average (z-scores -0.35 to -0.88)
-      on brightness, bandwidth, rolloff, loudness (rmse), and zcr, and above average (+0.22 to +0.48)
-      on spectral_contrast. Electronic and Hip-Hop share very similar above-average profiles (+0.38 to
-      +0.62) across spectral and energy features, while Pop sits near the dataset mean (-0.11 to +0.12)
-      across every feature family.
-    - 2D PCA Projection: PC1 (11.6%) and PC2 (7.3%) explain only 18.9% of total variance with heavy
-      class overlap, though genre medians separate acoustic genres (Instrumental, Folk) on the right
-      from synthetic/loud genres (Electronic, Hip-Hop) at the top-left and Rock on the left.
-    - Spectrograms per Genre: Hip-Hop and Pop show dense vertical broadband stripes from steady drum
-      beats, Electronic concentrates energy in repetitive low-frequency bands (mel bins 0-35), and
-      Instrumental/Folk show quieter upper frequencies and clear dynamic pauses—capturing temporal
-      structure that summary statistics collapse.
-
-All plots use ONLY the training split from load_split() so no validation or test
-information leaks into feature exploration.
+What the plots show:
+    - Instrumental and Folk have the lowest spectral centroid (659 and 850 Hz), RMS energy (2.75 and 3.48),
+      and zero-crossing rate (0.029 and 0.033), but the highest spectral contrast (~20.1). Electronic,
+      Hip-Hop, and Rock are at the opposite end (higher brightness, loudness, and ZCR).
+    - In the heatmap, Electronic and Hip-Hop have very similar positive z-scores (+0.38 to +0.62) on
+      spectral and energy features, while Instrumental and Folk are both strongly negative (-0.35 to -0.88).
+    - Pop sits close to 0 across all 11 feature groups (-0.11 to +0.12), and Experimental has the widest
+      spread in the boxplots.
+    - 2D PCA only explains 18.9% of variance (PC1=11.6%, PC2=7.3%) with heavy overlap across all 8 genres,
+      though the genre medians still separate acoustic genres from loud/electronic ones.
+    - The spectrograms show beat lines (Hip-Hop, Pop), repeating bass bands (Electronic), dynamic build-ups
+      (Rock), and quiet gaps (Instrumental, Folk) that get lost when averaging over 30 seconds.
 
 Run from the repo root (F21DL-main/):
     python scripts/data_prep/eda.py
