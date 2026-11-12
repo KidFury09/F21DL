@@ -15,6 +15,8 @@
 ## Neural Networks
 - [ ] Design the neural network
 - [x] MLP on the 518 features ([scripts/models/mlp.py](scripts/models/mlp.py))
+- [x] CNN on the spectrograms ([scripts/models/cnn.py](scripts/models/cnn.py))
+- [ ] CNN data augmentation
 
 
 ## Project structure
@@ -35,7 +37,8 @@ F21DL-main/
 │   └── models/
 │       ├── __init__.py
 │       ├── random_forest.py     # R3 baseline
-│       └── mlp.py               # NN-1 MLP on the 518 features
+│       ├── mlp.py               # NN-1 MLP on the 518 features
+│       └── cnn.py               # NN-2 CNN on the spectrograms
 ├── requirements.txt
 └── README.md
 ```
@@ -323,3 +326,59 @@ The FMA paper's baseline is 46.4% (SVM on MFCCs), so the MLP lands just under it
 
 ## Still to do
 - Run the results through the shared evaluation (BASE-1, #18) once it exists, so the MLP gets a row in the shared results table.
+
+# NN-2: CNN on the spectrograms
+
+Script: [scripts/models/cnn.py](scripts/models/cnn.py)
+
+## How to run
+From the repo root (needs the spectrograms in `data/processed/spectrograms/` and `torch` from `requirements.txt`):
+```bash
+python scripts/models/cnn.py          # full grid, about 26 minutes on an M4 Max
+python scripts/models/cnn.py --quick  # 1 setting, 2 epochs, just checks it runs
+```
+It uses the same split as every other model: the track ids come from `load_split(return_ids=True)`, and each id is matched to its cached `(128, 1292)` log-mel spectrogram. Spectrograms are normalised with the mean and std of the **training** set only.
+
+## Model
+4 blocks of conv (3x3) → batch norm → ReLU → max-pool (16, 32, 64, 128 channels), then global average pooling, dropout and a linear layer to the 8 genres. AdamW, weight decay `0.01`, batch size 32, up to 30 epochs. The epoch with the best validation macro-F1 is kept, and training stops early if that doesn't improve for 6 epochs.
+
+## What was tried
+4 settings, all scored on the **validation** set. Every run is saved in [results/cnn_tuning.csv](results/cnn_tuning.csv).
+
+| Learning rate | Dropout | Best epoch | Val accuracy | Val macro-F1 | Train time |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **0.001** | **0.5** | 28 | **59.4%** | **0.578** | 7.9 min |
+| 0.0003 | 0.5 | 28 | 58.0% | 0.560 | 8.0 min |
+| 0.0003 | 0.3 | 15 | 58.0% | 0.559 | 5.6 min |
+| 0.001 | 0.3 | 10 | 57.1% | 0.555 | 4.7 min |
+
+## Results
+Best setting: learning rate `0.001`, dropout `0.5`.
+
+| Split | Accuracy | Macro-F1 |
+| :--- | :--- | :--- |
+| Validation | 59.4% | 0.578 |
+| **Test** | **53.75%** | **0.529** |
+
+| Model | Test accuracy | Test macro-F1 |
+| :--- | :--- | :--- |
+| FMA paper baseline (SVM on MFCCs) | 46.4% | – |
+| MLP on 518 features (NN-1) | 45.3% | 0.453 |
+| **CNN on spectrograms (NN-2)** | **53.75%** | **0.529** |
+
+Training curves are in `figures/cnn_training_curve.png`.
+
+## Training time and hardware
+Apple M4 Max (macOS, PyTorch `mps` backend). The best setting trained for 30 epochs in 7.9 minutes (about 16 seconds per epoch), and the full 4-setting grid took about 26 minutes. Loading all spectrograms into memory takes about 2.6 GB of RAM.
+
+## What we noticed
+- **The CNN beats the MLP by about 8.5 points.** The spectrograms keep timing and texture information that the 518 summary features throw away, which is what the EDA suggested.
+- **Dropout 0.5 did better than 0.3** at both learning rates.
+- **Both dropout 0.5 runs peaked at epoch 28 of 30**, so the 30-epoch limit may be holding them back a little.
+- **Validation is noisy:** it moves by several points from one epoch to the next, so gaps of 1-2 points between settings are not reliable. The 4-setting grid is also small.
+- **Easy genres:** Hip-Hop (F1 0.79), Rock (0.69) and Electronic (0.61).
+- **Hard genres:** Folk (0.28) and Pop (0.39). Folk is also the MLP's worst genre and gets mixed up with Experimental, Instrumental and International.
+
+## Still to do
+- Run the results through the shared evaluation (BASE-1, #18) once it exists.
+- NN-3 (#24): try augmentation and compare it against this CNN.
