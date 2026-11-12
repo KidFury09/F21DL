@@ -14,6 +14,7 @@
 
 ## Neural Networks
 - [ ] Design the neural network
+- [x] MLP on the 518 features ([scripts/models/mlp.py](scripts/models/mlp.py))
 
 
 ## Project structure
@@ -33,7 +34,8 @@ F21DL-main/
 │   │   └── load_split.py        # shared cleaning + train/val/test split (DATA-4)
 │   └── models/
 │       ├── __init__.py
-│       └── random_forest.py     # R3 baseline
+│       ├── random_forest.py     # R3 baseline
+│       └── mlp.py               # NN-1 MLP on the 518 features
 ├── requirements.txt
 └── README.md
 ```
@@ -279,3 +281,45 @@ The script prints:
 - The 10 most important features
 
 Test accuracy should be well above chance (12.5%) and around the FMA paper's baseline of 46.4% (SVM on MFCCs). Validation scores will be somewhat higher than test because the setting is chosen on validation, so always report the **test** score.
+
+# NN-1: MLP on the 518 features
+
+Script: [scripts/models/mlp.py](scripts/models/mlp.py)
+
+## How to run
+From the repo root:
+```bash
+python scripts/models/mlp.py
+```
+Takes under a minute on a laptop CPU (the final model trains in about 2 seconds). It uses scikit-learn's `MLPClassifier` on the shared split with `load_split(scale=True)`, since an MLP needs scaled inputs.
+
+## What was tried
+12 settings, all scored on the **validation** set by macro-F1. Every run is saved in [results/mlp_tuning.csv](results/mlp_tuning.csv).
+
+| Setting | Values tried |
+| :--- | :--- |
+| Hidden layers | `(256,)`, `(512, 256)`, `(256, 128, 64)` |
+| L2 regularisation (`alpha`) | `0.0001`, `0.01` |
+| Learning rate | `0.001`, `0.0003` |
+
+Fixed for every run: ReLU, Adam, batch size 128, up to 200 epochs, `random_state=42`. Early stopping holds out 10% of the *training* data, so the validation set is only used to pick between settings.
+
+## Results
+Best setting: one hidden layer of 256 units, `alpha=0.01`, learning rate `0.0003`.
+
+| Split | Accuracy | Macro-F1 |
+| :--- | :--- | :--- |
+| Validation | 55.5% | 0.547 |
+| **Test** | **45.3%** | **0.453** |
+
+The FMA paper's baseline is 46.4% (SVM on MFCCs), so the MLP lands just under it. Training curves are in `figures/mlp_training_curve.png`.
+
+## What we noticed
+- **Bigger was not better:** the deeper networks scored about 50-53% on validation against about 55% for the single hidden layer. With only ~6,400 training songs they most likely overfit.
+- **The lower learning rate won** in every pairing of the other settings.
+- **Validation is higher than test** because the setting was chosen on validation, so the test score is the one to report.
+- **Easy genres:** Hip-Hop (F1 0.70), Rock (0.62) and Electronic (0.55).
+- **Hard genres:** Folk is the worst (F1 0.16) and is confused with Experimental, International and Pop. Instrumental is often predicted as Folk. This matches the EDA finding that Folk and Instrumental overlap heavily.
+
+## Still to do
+- Run the results through the shared evaluation (BASE-1, #18) once it exists, so the MLP gets a row in the shared results table.
