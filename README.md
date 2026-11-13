@@ -19,6 +19,24 @@
 - [x] CNN data augmentation ([scripts/models/cnn_augment.py](scripts/models/cnn_augment.py))
 
 
+# Results so far
+
+Same split for every model ([load_split()](scripts/data_prep/load_split.py)). Validation is what each setting was tuned on, so **test is the number to report**. Details and tuning notes are in each model's section below.
+
+| Model | Val accuracy | Val macro-F1 | Test accuracy | Test macro-F1 | Notes |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| FMA paper baseline (SVM on MFCCs) | – | – | 46.4% | – | Reference to beat |
+| MLP on 518 features (NN-1) | 55.5% | 0.547 | 45.3% | 0.453 | 1 hidden layer of 256 |
+| CNN on spectrograms (NN-2) | 59.4% | 0.578 | 53.75% | 0.529 | Single run, probably on the lucky side (see below) |
+| CNN rerun, no augmentation (NN-3 control) | 60.1% | 0.574 | 44.5% | 0.438 | Same setting as NN-2, different run |
+| CNN + `spec_mask` (NN-3) | 58.6% | 0.563 | 48.25% | 0.485 | Best augmentation on validation |
+| CNN + `noise_and_gain` (NN-3) | 57.4% | 0.560 | – | – | Test not evaluated |
+| CNN + `time_shift` (NN-3) | 53.5% | 0.519 | – | – | Test not evaluated |
+
+**Read the CNN rows with care:** the NN-2 setting scored 53.75% on test in one run and 44.5% in another (the GPU run is not exactly repeatable), so the CNN's real test accuracy is roughly 45-54% and the gaps between the CNN rows are within noise. See the NN-3 section.
+
+Still to add (BASE-1 to BASE-4, [#18](../../issues/18)): Decision Tree, Random Forest, Naive Bayes and the shared evaluation.
+
 ## Project structure
 ```
 F21DL-main/
