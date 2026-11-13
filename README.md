@@ -16,7 +16,7 @@
 - [ ] Design the neural network
 - [x] MLP on the 518 features ([scripts/models/mlp.py](scripts/models/mlp.py))
 - [x] CNN on the spectrograms ([scripts/models/cnn.py](scripts/models/cnn.py))
-- [ ] CNN data augmentation
+- [x] CNN data augmentation ([scripts/models/cnn_augment.py](scripts/models/cnn_augment.py))
 
 
 ## Project structure
@@ -38,7 +38,8 @@ F21DL-main/
 │       ├── __init__.py
 │       ├── random_forest.py     # R3 baseline
 │       ├── mlp.py               # NN-1 MLP on the 518 features
-│       └── cnn.py               # NN-2 CNN on the spectrograms
+│       ├── cnn.py               # NN-2 CNN on the spectrograms
+│       └── cnn_augment.py       # NN-3 CNN with data augmentation
 ├── requirements.txt
 └── README.md
 ```
@@ -382,3 +383,49 @@ Apple M4 Max (macOS, PyTorch `mps` backend). The best setting trained for 30 epo
 ## Still to do
 - Run the results through the shared evaluation (BASE-1, #18) once it exists.
 - NN-3 (#24): try augmentation and compare it against this CNN.
+
+# NN-3: CNN data augmentation
+
+Script: [scripts/models/cnn_augment.py](scripts/models/cnn_augment.py)
+
+## How to run
+```bash
+python scripts/models/cnn_augment.py          # all 4 runs, about 30 minutes on an M4 Max
+python scripts/models/cnn_augment.py --quick  # 1 run, 2 epochs, just checks it runs
+```
+It retrains the best NN-2 CNN (learning rate `0.001`, dropout `0.5`) with different augmentations. Everything else is the same in every run (split, seed, 40-epoch limit), so the augmentation is the only thing that changes. Augmentation is only applied to training batches, never to validation or test. `cnn.py` got one small change for this: `train()` takes an optional `augment` function.
+
+## What was tried
+| Augmentation | What it does |
+| :--- | :--- |
+| none (control) | The plain CNN, rerun with the same 40-epoch limit |
+| `spec_mask` | SpecAugment-style: 2 random frequency bands (up to 20 mel bins) and 2 random time bands (up to 100 frames) set to the training mean, different for every sample |
+| `time_shift` | Random circular shift along time of up to ±200 frames (about ±4.6 s) |
+| `noise_and_gain` | Gaussian noise (std 0.1) plus a random per-sample loudness offset (std 0.2), in normalised units |
+
+All runs are in [results/cnn_augmentation.csv](results/cnn_augmentation.csv); validation curves are in `figures/cnn_augmentation_curves.png`.
+
+## Results
+| Augmentation | Best epoch | Val accuracy | Val macro-F1 | Test accuracy | Test macro-F1 |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| none (control) | 15 | 60.1% | 0.574 | 44.5% | 0.438 |
+| **`spec_mask`** | 15 | 58.6% | 0.563 | 48.25% | 0.485 |
+| `noise_and_gain` | 25 | 57.4% | 0.560 | – | – |
+| `time_shift` | 6 | 53.5% | 0.519 | – | – |
+
+Test was only evaluated for the control and for the augmentation with the best validation score (`spec_mask`), so the test set was not used to choose between runs.
+
+## Did augmentation help?
+**We can't show that it did.** On validation, the plain CNN was best (0.574 macro-F1), `spec_mask` was about 1 point behind, `noise_and_gain` about 1.4 behind and `time_shift` about 5.5 behind. On test, `spec_mask` came out about 3.75 points above the control, but that goes the opposite way to validation.
+
+The main reason to be careful is run-to-run noise. The control here is the same setting as the NN-2 CNN, which scored **53.75%** on test. In this run it scored **44.5%**. The GPU (`mps`) run is not exactly repeatable even with a fixed seed, and the epoch picked by validation macro-F1 changed from 28 to 15. Validation macro-F1 also jumps by several points from one epoch to the next, and the 800-song test set is small. A test gap of a few points between two runs is smaller than this noise, so it should not be read as `spec_mask` helping.
+
+- **`time_shift` looks worse.** It is the only gap larger than the noise on validation (about 5.5 points). A shift moves the beat and intro/outro structure around, which may matter for genre.
+- **`noise_and_gain` and `spec_mask` look neutral.** They are within noise of the control.
+- **Caveat for NN-2:** because of the same noise, the 53.75% test score reported for the plain CNN is probably on the lucky side, and the true figure is likely lower. Treat NN-2 and NN-3 test numbers as roughly 45-54%, not as exact values.
+
+## What would settle it
+Repeat each setting with several seeds and compare the averages, and use a longer epoch limit with a learning-rate schedule to cut the epoch-to-epoch jumps. We did not do this because each run takes 5-10 minutes.
+
+## Still to do
+- Run the results through the shared evaluation (BASE-1, #18) once it exists.

@@ -119,7 +119,7 @@ def score(y_true, y_pred):
 
 # AI Generated Function
 # Prompt: Write a training loop for a spectrogram CNN in PyTorch that trains with AdamW and cross-entropy, evaluates val accuracy and macro-F1 every epoch, keeps the best epoch's weights by val macro-F1, stops early after PATIENCE epochs without improvement, and returns the model, per-epoch history and training time
-def train(params, data, device, max_epochs=MAX_EPOCHS):
+def train(params, data, device, max_epochs=MAX_EPOCHS, augment=None):
     x_train, y_train, x_val, y_val, mean, std = data
     torch.manual_seed(SEED)
     model = SpectrogramCNN(params["channels"], params["dropout"]).to(device)
@@ -138,6 +138,8 @@ def train(params, data, device, max_epochs=MAX_EPOCHS):
         for i in range(0, len(order), BATCH_SIZE):
             idx = order[i:i + BATCH_SIZE]
             xb = (x_train[idx].to(device).float() - mean) / std
+            if augment is not None:  # NN-3: training batches only, never val/test
+                xb = augment(xb)
             yb = y_train_t[idx].to(device)
             optimiser.zero_grad()
             loss = loss_fn(model(xb), yb)
