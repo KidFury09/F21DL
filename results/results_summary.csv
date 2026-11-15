@@ -1,0 +1,4 @@
+model,val_acc,val_macro_f1,test_acc,test_macro_f1,f1_Electronic,f1_Experimental,f1_Folk,f1_Hip-Hop,f1_Instrumental,f1_International,f1_Pop,f1_Rock,train_secs,notes
+Random Forest,0.5713,0.5553,0.4725,0.471,0.5403,0.3209,0.2617,0.6291,0.4742,0.5181,0.3704,0.6533,1.25,"518 features, 200 trees, max_depth=20, min_samples_leaf=1"
+Naive Bayes,0.4988,0.4807,0.4175,0.3993,0.4074,0.2895,0.2882,0.5233,0.4796,0.2733,0.3121,0.621,0.01,"300 features, unscaled, var_smoothing=1e-09"
+Decision Tree,0.4225,0.4176,0.3688,0.3631,0.4677,0.1294,0.2587,0.4706,0.3942,0.3981,0.3147,0.4713,0.45,"150 features, gini, max_depth=10, min_samples_leaf=20"
