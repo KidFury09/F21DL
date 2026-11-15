@@ -14,15 +14,14 @@ Outputs:
     figures/nb_feature_count.png     validation macro-F1 vs. number of features (scaled vs. unscaled)
     figures/nb_confusion_matrix.png  test confusion matrix
 
-Run from the repo root (F21DL-main/):
+Run:
     python scripts/models/naive_bayes.py
 """
 
-# AI Generated Code (Claude Code, model Opus 5.5)
-# Prompt: please make the code for decision trees and naive bayes
-# (context given to the model: follow the structure of scripts/models/random_forest.py,
-#  use load_split(), tune the number of features and var_smoothing on validation
-#  macro-F1, evaluate on test once, save the tuning results and plots)
+# AI Assisted Code (Claude Code, model Opus 5.5)
+# Prompt: follow the structure of scripts/models/random_forest.py, and help me implement a naive bayes model for the FMA dataset.
+#  use load_split(), tune on validation macro-F1, evaluate on test once, save the
+#  tuning results, a confusion matrix and a plot of the top tree levels)
 
 import os
 import sys

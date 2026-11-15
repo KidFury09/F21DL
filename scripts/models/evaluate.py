@@ -17,15 +17,13 @@ Usage in a model script (scripts/models/<model>.py):
     save_result("Random Forest", val_acc, val_f1, y_test, test_pred, class_names,
                 train_secs, notes="518 features, 200 trees")
 
-Models that don't have a sklearn-style .predict() (e.g. the PyTorch CNN) can skip
-evaluate() and pass their own predictions straight to the other three functions.
 """
 
-# AI Generated Code (Claude Code, model Opus 5.5)
-# Prompt: just make evaluate file now and make the scripts use it
-# (context given to the model: shared module with evaluate(), a printed test report,
-#  a confusion matrix figure, and save_result() that adds/replaces one row per model in
-#  results/results_summary.csv including per-genre test F1)
+# AI Assisted Code (Claude Code, model Opus 5.5)
+# Prompt: make an evaluate file that makes the scripts use it which gives a shared module with evaluate(), 
+# a printed test report, a confusion matrix figure, and save_result() 
+# that adds one row per model in results/results_summary.csv including per-genre test F1
+
 
 import os
 

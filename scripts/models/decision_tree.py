@@ -1,23 +1,21 @@
 """
-R3 baseline: Decision Tree on the FMA audio features.
+R3 baseline: Decision Tree
 
 Uses the shared split from load_split() so results are comparable with the
-other models. Hyperparameters (including how many of the EDA-2 ranked features
-to use) are picked on the validation set; the test set is only used once at
+other models. Hyperparameters are picked on the validation set; the test set is only used once at
 the end.
 
 Outputs:
     results/dt_tuning.csv            every setting tried, sorted by val macro-F1
     figures/dt_confusion_matrix.png  test confusion matrix
-    figures/dt_tree_top_levels.png   top 2 levels of the final tree (interpretability)
+    figures/dt_tree_top_levels.png   top 2 levels of the final tree
 
-Run from the repo root (F21DL-main/):
+To Run:
     python scripts/models/decision_tree.py
 """
 
-# AI Generated Code (Claude Code, model Opus 5.5)
-# Prompt: please make the code for decision trees and naive bayes
-# (context given to the model: follow the structure of scripts/models/random_forest.py,
+# AI Assisted Code (Claude Code, model Opus 5.5)
+# Prompt: follow the structure of scripts/models/random_forest.py, and help me implement a decision tree mode for the FMA dataset.
 #  use load_split(), tune on validation macro-F1, evaluate on test once, save the
 #  tuning results, a confusion matrix and a plot of the top tree levels)
 

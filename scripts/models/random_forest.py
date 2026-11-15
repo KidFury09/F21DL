@@ -2,8 +2,7 @@
 R3 baseline: Random Forest on the FMA audio features.
 
 Uses the shared split from load_split() so results are comparable with the
-other models. Hyperparameters (including how many of the EDA-2 ranked features
-to use) are picked on the validation set; the test set is only used once at
+other models. Hyperparameters are picked on the validation set; the test set is only used once at
 the end.
 
 Outputs:
@@ -15,13 +14,10 @@ Run from the repo root (F21DL-main/):
     python scripts/models/random_forest.py
 """
 
-# AI Generated Code (Claude Code, model Opus 5.5)
+# AI Assisted Code (Claude Code, model Opus 5.5)
 # Original prompt: Tune a RandomForestClassifier on the validation set using PARAM_GRID, refit with
 # best macro-F1 params, and print test accuracy, macro-F1, classification report, confusion matrix,
 # and top 10 feature importances
-# Follow-up prompt: update random forest to give same outputs as other two
-# (context given to the model: match decision_tree.py / naive_bayes.py, i.e. tune the number of
-#  features too, save a tuning CSV, a confusion matrix figure and a feature importance figure)
 
 import os
 import sys
