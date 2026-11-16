@@ -630,6 +630,6 @@ The main reason to be careful is run-to-run noise. The control here is the same 
 
 ## What would settle it
 Repeat each setting with several seeds and compare the averages, and use a longer epoch limit with a learning-rate schedule to cut the epoch-to-epoch jumps. We did not do this because each run takes 5-10 minutes.
-
 ## Still to do
+- Add a `save_result(...)` call from the shared evaluation ([BASE-1](#base-1-shared-evaluation)) for the control and `spec_mask` runs.
 - Add a `save_result(...)` call from the shared evaluation ([BASE-1](#base-1-shared-evaluation)) for the control and `spec_mask` runs.
