@@ -1,0 +1,5 @@
+augmentation,lr,dropout,max_epochs,best_epoch,val_acc,val_macro_f1,test_acc,test_macro_f1,train_minutes,hardware
+none (control),0.001,0.5,40,15,0.60125,0.573656719307233,0.445,0.4376886462632521,5.444126852353414,arm macOS-15.7.4-arm64-arm-64bit-Mach-O (mps)
+spec_mask,0.001,0.5,40,15,0.58625,0.5628309848766098,0.4825,0.4846214471085221,6.399143369992574,arm macOS-15.7.4-arm64-arm-64bit-Mach-O (mps)
+noise_and_gain,0.001,0.5,40,25,0.57375,0.5597598243348487,,,9.872699332237243,arm macOS-15.7.4-arm64-arm-64bit-Mach-O (mps)
+time_shift,0.001,0.5,40,6,0.535,0.5187989707863447,,,4.386491564909617,arm macOS-15.7.4-arm64-arm-64bit-Mach-O (mps)
