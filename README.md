@@ -4,7 +4,7 @@ We classify 30-second music clips from the [FMA-small](https://github.com/mdeff/
 
 We compare three classical baselines (Decision Tree, Naive Bayes, Random Forest) trained on the 518 pre-computed audio features with two neural networks: an MLP on the same features and a CNN on log-mel spectrograms.
 
-**About the codes in the headings:** R1–R4 are the coursework requirements. DATA-, EDA-, BASE- and NN- codes are our GitHub issues (see [github_issues.md](github_issues.md)).
+**About the codes in the headings:** R1–R4 are the coursework requirements. DATA-, EDA-, BASE- and NN- codes are our GitHub issues.
 
 ## Contents
 1. [Results](#results)
@@ -75,7 +75,9 @@ Requires **Python 3.12 or newer** (`python --version` to check).
 
 # Getting the data
 
-The data is too big for GitHub, so everyone has to download it and build it locally.
+**You don't need to do anything here.** The processed data every script uses is already in the repo: `data/processed/fma_small_merged.csv` and one spectrogram per track in `data/processed/spectrograms/`. After cloning you can go straight to [Running the scripts](#running-the-scripts).
+
+The steps below are only for **recreating the dataset from scratch** (about 8 GB to download, and slow to build).
 
 1. Download [`fma_metadata.zip`](https://os.unil.cloud.switch.ch/fma/fma_metadata.zip) and unzip it into `data/`. We only use `features.csv` and `tracks.csv` from it.
 2. Download [`fma_small.zip`](https://os.unil.cloud.switch.ch/fma/fma_small.zip) and unzip it into `data/`. It unzips to a folder called `fma_small`. Rename it to `fma_small_audio`.
@@ -101,7 +103,7 @@ The data is too big for GitHub, so everyone has to download it and build it loca
 
 # Running the scripts
 
-Run everything from the **repo root** (the folder this README is in), or open a file in VS Code and click **▶ Run Python File**. Model scripts call `load_split()` themselves, so nothing needs to be run beforehand except step 3 of [Getting the data](#getting-the-data).
+Run everything from the **repo root** (the folder this README is in), or open a file in VS Code and click **▶ Run Python File**. Model scripts call `load_split()` themselves, so nothing needs to be run beforehand.
 
 | What | Command | Time |
 | :--- | :--- | :--- |
@@ -130,10 +132,10 @@ Both CNN scripts accept `--quick` (1 setting, 2 epochs) to check they run before
 
 # Project structure
 ```
-├── data/                        # not pushed (too big), see "Getting the data"
-│   ├── fma_metadata/            # features.csv, tracks.csv
-│   ├── fma_small_audio/         # MP3 clips
-│   └── processed/
+├── data/
+│   ├── fma_metadata/            # features.csv, tracks.csv (not pushed, only needed to rebuild)
+│   ├── fma_small_audio/         # MP3 clips (not pushed, only needed to rebuild)
+│   └── processed/               # pushed, ready to use
 │       ├── fma_small_merged.csv # merged features + metadata
 │       └── spectrograms/        # one log-mel spectrogram per track (<track_id>.npy)
 ├── figures/                     # every plot the scripts save
